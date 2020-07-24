@@ -49,9 +49,12 @@ class ColorGrid {
         // underlay the div with a negative z-index
         this.gridEl.style.zIndex = -1;
 
+        const rect = this.containerEl.getBoundingClientRect();
+
         // make the grid take up the entire container element
         this.gridEl.style.position = "absolute";
-        this.gridEl.style.top = 0; // TODO this wont work for non-body elements
+        this.gridEl.style.top = rect.top;
+        this.gridEl.style.left = rect.left;
         this.gridEl.style.tableLayout = "fixed";
         this.gridEl.style.width = "100%";
         this.gridEl.style.height = "99.999%"; // TODO figure out why scroll bar appears on chrome when at 100%
