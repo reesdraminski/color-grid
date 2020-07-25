@@ -40,7 +40,7 @@ class ColorGrid {
 
         // create table element that will be the grid
         this.gridEl = document.createElement("table");
-        this.gridEl.id = "grid";
+        this.gridEl.id = uid();
         this.gridEl.style.borderCollapse = "collapse";
 
         // make the grid element a child element so that it can resize according to parent
@@ -49,15 +49,21 @@ class ColorGrid {
         // underlay the div with a negative z-index
         this.gridEl.style.zIndex = -1;
 
+        // get the position of the container element so we can position the grid element relative to it
         const rect = this.containerEl.getBoundingClientRect();
 
-        // make the grid take up the entire container element
-        this.gridEl.style.position = "absolute";
-        this.gridEl.style.top = rect.top;
-        this.gridEl.style.left = rect.left;
-        this.gridEl.style.tableLayout = "fixed";
-        this.gridEl.style.width = "100%";
-        this.gridEl.style.height = "99.999%"; // TODO figure out why scroll bar appears on chrome when at 100%
+        // styles to make the grid take up the entire container element
+        const style = {
+            position: "absolute",
+            top: rect.top,
+            left: rect.left,
+            tableLayout: "fixed",
+            width: "100%",
+            height: "99.999%" // TODO figure out why scroll bar appears on chrome when at 100%
+        };
+
+        // set all the styles of the grid element as important to override any table styles that would interfere with the display
+        Object.entries(style).forEach(([ property, value ]) => this.gridEl.style.setProperty(property, value, "important"));
 
         // create the grid squares in the table element
         for (let y = 0; y < this.verticalSquares; y++) {
@@ -68,7 +74,7 @@ class ColorGrid {
             }
         }
 
-        // have the grid update at the refresh rate of UPDATE_INTERVAL
+        // have the grid update at the refresh rate of updateInterval
         this.updateGrid();
         setInterval(() => this.updateGrid(), this.updateInterval);
     }
@@ -79,7 +85,7 @@ class ColorGrid {
      */
     updateGrid() {
         // get all the grid cells as an array so it's iterable
-        let cells = Array.from(document.querySelectorAll("#grid td"));
+        let cells = Array.from(document.querySelectorAll(`#${this.gridEl.id} td`));
 
         // clear out all cells
         cells.forEach(cell => cell.style.backgroundColor = "");
@@ -97,7 +103,30 @@ class ColorGrid {
 }
 
 /**
- * A Fisher-Yates shuffle algorithm that gets hooked into the Array prototype.
+ * Generate a unique, HTML-friendly ID.
+ * https://stackoverflow.com/questions/3231459/create-unique-id-with-javascript/8054219
+ * @returns {String} id
+ */
+function uid() {
+    // always start with a letter (for DOM friendlyness)
+    let id = String.fromCharCode(Math.floor((Math.random() * 25) + 65));
+
+    do {                
+        // between numbers and characters (48 is 0 and 90 is Z (42-48 = 90)
+        let asciiCode = Math.floor((Math.random() * 42) + 48);
+
+        if (asciiCode < 58 || asciiCode > 64){
+            // exclude all chars between : (58) and @ (64)
+            id += String.fromCharCode(asciiCode);    
+        }                
+    } while (id.length < 32);
+
+    return id;
+}
+
+/**
+ * A shuffle algorithm that gets hooked into the Array prototype.
+ * https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
  */
 Array.prototype.shuffle = function() {
     let m = this.length, t, i;
