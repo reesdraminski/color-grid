@@ -24,3 +24,6 @@ new ColorGrid({
   updateInterval: 3000
 });
 ```
+
+## People Using color-grid
+* [Watersheets](https://watersheets.app)
