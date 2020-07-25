@@ -4,6 +4,7 @@ const NUM_SQUARES = 10;
 const DEFAULT_COVERAGE = .85;
 const DEFAULT_HORIZONTAL_SQUARES = 10;
 const DEFAULT_VERTICAL_SQUARES = 10;
+const DEFAULT_SMOOTHNESS = 1;
 
 class ColorGrid {
     /**
@@ -37,10 +38,11 @@ class ColorGrid {
         this.coverage = props.coverage || DEFAULT_COVERAGE;
         this.horizontalSquares = props.horizontalSquares || DEFAULT_HORIZONTAL_SQUARES;
         this.verticalSquares = props.verticalSquares || DEFAULT_VERTICAL_SQUARES;
+        this.smoothness = props.smoothness || DEFAULT_SMOOTHNESS;
 
         // create table element that will be the grid
         this.gridEl = document.createElement("table");
-        this.gridEl.id = uid();
+        this.gridEl.id = "colorgrid-" + Math.random().toString(36).substring(2, 15);
         this.gridEl.style.borderCollapse = "collapse";
 
         // make the grid element a child element so that it can resize according to parent
@@ -97,31 +99,9 @@ class ColorGrid {
             .forEach(cell => {
                 // have the background color change smoothly with a CSS transition
                 cell.style.backgroundColor = this.colors[Math.floor(Math.random() * this.colors.length)];
-                cell.style.transition = "background-color 1s ease-in-out";
+                cell.style.transition = `background-color ${this.smoothness}s ease-in-out`;
             });
     }
-}
-
-/**
- * Generate a unique, HTML-friendly ID.
- * https://stackoverflow.com/questions/3231459/create-unique-id-with-javascript/8054219
- * @returns {String} id
- */
-function uid() {
-    // always start with a letter (for DOM friendlyness)
-    let id = String.fromCharCode(Math.floor((Math.random() * 25) + 65));
-
-    do {                
-        // between numbers and characters (48 is 0 and 90 is Z (42-48 = 90)
-        let asciiCode = Math.floor((Math.random() * 42) + 48);
-
-        if (asciiCode < 58 || asciiCode > 64){
-            // exclude all chars between : (58) and @ (64)
-            id += String.fromCharCode(asciiCode);    
-        }                
-    } while (id.length < 32);
-
-    return id;
 }
 
 /**
