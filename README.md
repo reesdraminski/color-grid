@@ -14,6 +14,8 @@ new ColorGrid({
   ],
   // default: .85, float between [0, 1] because it's a percentage
   coverage: 1,
+  // default: 1, transition time in seconds
+  smoothness: 2,
   // default: 10
   horizontalSquares: 20,
   // default: 10
